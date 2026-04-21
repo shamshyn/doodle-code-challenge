@@ -10,6 +10,17 @@
   --chat-self: #f0ebb8;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
 body {
   font-family: "Trebuchet MS", "Segoe UI", Tahoma, Arial, sans-serif;
   background: var(--chat-bg);
@@ -18,7 +29,11 @@ body {
   padding: 0;
 }
 
-/* Accessibility utilities */
+img {
+  display: block;
+  max-width: 100%;
+}
+
 .sr-only {
   position: absolute;
   width: 0.0625rem;
@@ -51,4 +66,17 @@ body {
 
 .skip-to-main:focus {
   top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

@@ -1,20 +1,22 @@
 "use client";
 
-import ChatWindow from "@/components/ChatWindow";
+import { ChatWindow } from "@/components/ChatWindow/ChatWindow";
 
 export default function Home() {
   return (
     <main
-      className="min-h-screen"
+      id="main-content"
+      className="fixed inset-0 flex flex-col bg-[#eceeef]"
       style={{
-        backgroundImage: 'url(/assets/body-bg.jpg)',
-        backgroundRepeat: 'repeat',
-        backgroundSize: 'contain',
+        backgroundImage: "url(/assets/body-bg.jpg)",
+        backgroundRepeat: "repeat",
+        backgroundSize: "contain",
       }}
     >
-      <div className="mx-auto h-screen w-full">
-        <ChatWindow />
-      </div>
+      <a href="#main-content" className="sr-only focus:not-sr-only skip-to-main">
+        Skip to main content
+      </a>
+      <ChatWindow />
     </main>
   );
 }
