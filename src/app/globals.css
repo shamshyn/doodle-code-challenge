@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --chat-bg: #eceeef;
+  --chat-text: #46505c;
+  --chat-muted: #a8b2bc;
+  --chat-card-border: #c6cdd3;
+  --chat-input-bar: #3b95ca;
+  --chat-send: #fa8568;
+  --chat-self: #f0ebb8;
+}
+
+body {
+  font-family: "Trebuchet MS", "Segoe UI", Tahoma, Arial, sans-serif;
+  background: var(--chat-bg);
+  color: var(--chat-text);
+  margin: 0;
+  padding: 0;
+}
+
+/* Accessibility utilities */
+.sr-only {
+  position: absolute;
+  width: 0.0625rem;
+  height: 0.0625rem;
+  padding: 0;
+  margin: -0.0625rem;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles for better accessibility */
+:focus-visible {
+  outline: 0.125rem solid #3b95ca;
+  outline-offset: 0.125rem;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  top: -2.5rem;
+  left: 0;
+  background: #3b95ca;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
