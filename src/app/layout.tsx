@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export const icons = {
   icon: "/favicon.ico",
-  apple: "/apple-touch-icon.png",
+  apple: "/favicon.ico",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
         <link rel="icon" href={icons.icon} />
         <link rel="apple-touch-icon" href={icons.apple} />
       </head>
-      <body className="min-h-full">
+      <body>
         <Providers>{children}</Providers>
       </body>
     </html>

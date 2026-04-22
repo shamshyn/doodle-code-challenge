@@ -54,9 +54,8 @@ export const MessageInput: FC<IMessageInputProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-t border-[#318abc] bg-[#3b95ca]"
+      className="border-t border-[#318abc] bg-[#3b95ca] shrink-0"
       aria-label="Send a message"
-      style={{ position: "relative", zIndex: 1 }}
     >
       <div className="mx-auto w-full max-w-336 p-2 sm:p-4 2xl:px-0">
         <div className="flex items-center gap-2 sm:gap-4">
