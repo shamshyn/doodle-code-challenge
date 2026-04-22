@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: doodle-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../.env.local
+    environment:
+      # AUTH_TOKEN will be loaded from .env.local, fallback to .env.example if needed
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: doodle-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3002:3001"
+    environment:
+      NEXT_PUBLIC_CHAT_API_ORIGIN: http://localhost:3000
+      NEXT_PUBLIC_CHAT_API_BASE_URL: http://localhost:3000/api/v1
+      NEXT_PUBLIC_CHAT_AUTH_TOKEN: super-secret-doodle-token
