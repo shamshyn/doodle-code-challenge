@@ -12,13 +12,31 @@ Next.js frontend for the Doodle chat challenge API.
 cp .env.example .env.local
 ```
 
-2. Start the frontend:
+2. Install dependencies:
+
+```bash
+npm i
+# or
+yarn
+# or
+pnpm i
+# or
+bun i
+```
+
+3. Start the frontend:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-3. Open `http://localhost:3001`.
+4. Open `http://localhost:3001`.
 
 The frontend expects the backend API at `http://localhost:3000` by default.
 
