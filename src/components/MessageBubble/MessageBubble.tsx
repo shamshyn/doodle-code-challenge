@@ -17,10 +17,10 @@ export const MessageBubble: FC<IMessageBubbleProps> = ({
   >
     <div
       className={[
-        "rounded-lg border px-4 py-3 sm:px-5 sm:py-4",
+        "rounded-lg border p-4",
         "max-w-75 sm:max-w-[20rem] md:max-w-88 lg:max-w-208",
         isSender
-          ? "border-[#d8d39e] bg-[#f0ebb8]"
+          ? "border-[#d8d39e] bg-[#f0ebb8] mt-2"
           : "border-[#c6cdd3] bg-[#f3f5f7]",
       ].join(" ")}
     >

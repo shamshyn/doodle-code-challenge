@@ -71,7 +71,7 @@ export const MessageList = forwardRef<HTMLDivElement, IMessageListProps>(
       <section
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto px-4 pt-6 sm:px-6"
+        className="flex-1 min-h-0 overflow-y-auto px-6 pt-6"
         role="log"
         aria-label="Conversation messages"
         aria-live="polite"
@@ -86,7 +86,7 @@ export const MessageList = forwardRef<HTMLDivElement, IMessageListProps>(
             </p>
           )}
           <ul
-            className="flex flex-col gap-4 sm:gap-5 pb-4 sm:pb-6"
+            className="flex flex-col gap-2 pb-4"
             aria-label="Message list"
           >
             {messages.map((message) => (
