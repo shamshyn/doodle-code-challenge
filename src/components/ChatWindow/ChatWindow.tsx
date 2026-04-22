@@ -39,8 +39,8 @@ export const ChatWindow: FC = () => {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const handleSendMessage = useCallback(
-    (message: string, author: string) => {
-      sendMessage({ message, author });
+    async (message: string, author: string) => {
+      return sendMessage({ message, author });
     },
     [sendMessage],
   );
@@ -70,7 +70,6 @@ export const ChatWindow: FC = () => {
     const element = scrollContainerRef.current;
     if (!element) return;
     element.scrollTop = element.scrollHeight;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -109,6 +108,7 @@ export const ChatWindow: FC = () => {
   const resolvedError = isError
     ? getReadableErrorMessage(error?.message)
     : null;
+  const isMessageInputDisabled = Boolean(resolvedError);
 
   return (
     <section
@@ -118,6 +118,7 @@ export const ChatWindow: FC = () => {
     >
       <div className="flex-1 min-h-0 flex flex-col">
         <MessageList
+          ref={scrollContainerRef}
           messages={messages}
           isLoading={isLoading}
           error={resolvedError}
@@ -125,7 +126,11 @@ export const ChatWindow: FC = () => {
           isFetchingPrevious={isFetchingNextPage}
         />
       </div>
-      <MessageInput onSendMessage={handleSendMessage} isLoading={isSending} />
+      <MessageInput
+        onSendMessage={handleSendMessage}
+        isLoading={isSending}
+        isDisabled={isMessageInputDisabled}
+      />
     </section>
   );
 };

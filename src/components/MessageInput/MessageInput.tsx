@@ -16,6 +16,7 @@ import { IMessageInputProps } from "./MessageInput.types";
 export const MessageInput: FC<IMessageInputProps> = ({
   onSendMessage,
   isLoading = false,
+  isDisabled = false,
 }) => {
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLInputElement>(null);
@@ -25,19 +26,25 @@ export const MessageInput: FC<IMessageInputProps> = ({
   }, []);
 
   const handleSubmit = useCallback(
-    (event: SyntheticEvent<HTMLFormElement>) => {
+    async (event: SyntheticEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const trimmedMessage = message.trim();
-      if (!trimmedMessage || isLoading) {
+      if (!trimmedMessage || isLoading || isDisabled) {
         return;
       }
 
-      onSendMessage(trimmedMessage, "You");
-      setMessage("");
-      messageInputRef.current?.focus();
+      try {
+        const didSend = await onSendMessage(trimmedMessage, "You");
+        if (didSend !== false) {
+          setMessage("");
+          messageInputRef.current?.focus();
+        }
+      } catch {
+        // Keep the draft in the input if sending fails unexpectedly.
+      }
     },
-    [isLoading, message, onSendMessage],
+    [isDisabled, isLoading, message, onSendMessage],
   );
 
   useEffect(() => {
@@ -51,35 +58,37 @@ export const MessageInput: FC<IMessageInputProps> = ({
       aria-label="Send a message"
       style={{ position: "relative", zIndex: 1 }}
     >
-      <div className="mx-auto flex w-full max-w-336 items-center p-2 gap-2 sm:p-4 sm:gap-4 2xl:px-0">
-        <label htmlFor="message-input" className="sr-only">
-          Message
-        </label>
+      <div className="mx-auto w-full max-w-336 p-2 sm:p-4 2xl:px-0">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <label htmlFor="message-input" className="sr-only">
+            Message
+          </label>
 
-        <input
-          id="message-input"
-          ref={messageInputRef}
-          type="text"
-          placeholder="Message"
-          autoComplete="off"
-          value={message}
-          onChange={handleChange}
-          disabled={isLoading}
-          aria-describedby="message-input-help"
-          className="h-16 min-w-0 flex-1 rounded-md border-2 border-[#2d79a8] bg-[#f6f6f7] px-4 text-[1.125rem] text-[#46505c] placeholder:text-[#a8b2bc] focus:outline-none sm:h-21 sm:text-[1.5rem]"
-        />
+          <input
+            id="message-input"
+            ref={messageInputRef}
+            type="text"
+            placeholder="Message"
+            autoComplete="off"
+            value={message}
+            onChange={handleChange}
+            disabled={isLoading || isDisabled}
+            aria-describedby="message-input-help"
+            className="h-16 min-w-0 flex-1 rounded-md border-2 border-[#2d79a8] bg-[#f6f6f7] px-4 text-[1.125rem] text-[#46505c] placeholder:text-[#a8b2bc] focus:outline-none sm:h-21 sm:text-[1.5rem]"
+          />
 
-        <span id="message-input-help" className="sr-only">
-          Type a message and press enter or use the send button.
-        </span>
+          <span id="message-input-help" className="sr-only">
+            Type a message and press enter or use the send button.
+          </span>
 
-        <button
-          type="submit"
-          disabled={!message.trim() || isLoading}
-          className="h-16 shrink-0 rounded-md bg-[#fa8568] px-6 text-[1.125rem] font-semibold text-white transition-colors hover:bg-[#f47258] disabled:cursor-not-allowed disabled:bg-[#c7cdd3] sm:h-21 sm:min-w-40 sm:px-8 sm:text-[1.5rem]"
-        >
-          Send
-        </button>
+          <button
+            type="submit"
+            disabled={!message.trim() || isLoading || isDisabled}
+            className="h-16 shrink-0 rounded-md bg-[#fa8568] px-6 text-[1.125rem] font-semibold text-white transition-colors hover:bg-[#f47258] disabled:cursor-not-allowed disabled:bg-[#c7cdd3] sm:h-21 sm:min-w-40 sm:px-8 sm:text-[1.5rem]"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </form>
   );

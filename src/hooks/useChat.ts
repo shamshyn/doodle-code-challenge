@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   InfiniteData,
   useInfiniteQuery,
@@ -6,7 +6,12 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { getMessages, postMessage } from "@/lib/api";
-import { GetMessagesResponse, Message } from "@/lib/types";
+import {
+  GetMessagesResponse,
+  Message,
+  PostMessageRequest,
+  PostMessageResponse,
+} from "@/lib/types";
 
 const MESSAGES_QUERY_KEY = "messages";
 const MESSAGES_PAGE_SIZE = 20;
@@ -46,14 +51,41 @@ export const useChat = () => {
   });
 
   // Mutation for sending a new message
-  const sendMessageMutation = useMutation({
+  const sendMessageMutation = useMutation<
+    PostMessageResponse,
+    Error,
+    PostMessageRequest
+  >({
     mutationFn: postMessage,
     onSuccess: (newMessage) => {
       queryClient.setQueryData<InfiniteData<GetMessagesResponse, string | undefined>>(
         [MESSAGES_QUERY_KEY],
         (oldData) => {
           if (!oldData) {
-            return { pages: [], pageParams: [] };
+            return {
+              pages: [
+                {
+                  messages: [newMessage.message],
+                  nextCursor: undefined,
+                  previousCursor: undefined,
+                },
+              ],
+              pageParams: [undefined],
+            };
+          }
+
+          if (oldData.pages.length === 0) {
+            return {
+              ...oldData,
+              pages: [
+                {
+                  messages: [newMessage.message],
+                  nextCursor: undefined,
+                  previousCursor: undefined,
+                },
+              ],
+              pageParams: [undefined],
+            };
           }
 
           const newPages = oldData.pages.map((page, index: number) => {
@@ -73,11 +105,24 @@ export const useChat = () => {
     },
   });
 
+  const sendMessage = useCallback(
+    async (payload: PostMessageRequest): Promise<boolean> => {
+      sendMessageMutation.reset();
+
+      try {
+        await sendMessageMutation.mutateAsync(payload);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [sendMessageMutation],
+  );
+
   // Flatten and sort all messages by timestamp
   const messages: Message[] = useMemo(() => {
-    return (data?.pages.flatMap((page) => page.messages) ?? []).sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    return [...(data?.pages.flatMap((page) => page.messages) ?? [])].sort(
+      (a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp),
     );
   }, [data]);
 
@@ -89,7 +134,8 @@ export const useChat = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    sendMessage: sendMessageMutation.mutate,
+    sendMessage,
     isSending: sendMessageMutation.isPending,
+    sendError: sendMessageMutation.isError ? sendMessageMutation.error : null,
   };
 }

@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { UIEvent, forwardRef, useCallback } from "react";
 import { IMessageListProps } from "./MessageList.types";
 import { MessageBubble } from "../MessageBubble/MessageBubble";
 
@@ -6,37 +6,29 @@ import { MessageBubble } from "../MessageBubble/MessageBubble";
  * MessageList displays a scrollable list of chat messages.
  * Handles scroll-to-bottom on new messages and triggers pagination when scrolled to top.
  */
-export const MessageList: FC<IMessageListProps> = ({
-  messages,
-  isLoading = false,
-  error = null,
-  onReachTop,
-  isFetchingPrevious = false,
-}) => {
-  const localContainerRef = useRef<HTMLDivElement | null>(null);
-  const prevMsgCountRef = useRef(messages.length);
+export const MessageList = forwardRef<HTMLDivElement, IMessageListProps>(
+  function MessageList(
+    {
+      messages,
+      isLoading = false,
+      error = null,
+      onReachTop,
+      isFetchingPrevious = false,
+    },
+    scrollContainerRef,
+  ) {
+    const handleScroll = useCallback(
+      (event: UIEvent<HTMLDivElement>) => {
+        if (!onReachTop || isFetchingPrevious) {
+          return;
+        }
 
-  // Scroll to bottom when new messages arrive or on mount
-  useEffect(() => {
-    const scrollEl = localContainerRef.current;
-    if (!scrollEl) return;
-    if (messages.length > prevMsgCountRef.current) {
-      scrollEl.scrollTop = scrollEl.scrollHeight;
-    }
-    if (prevMsgCountRef.current === 0 && messages.length > 0) {
-      scrollEl.scrollTop = scrollEl.scrollHeight;
-    }
-    prevMsgCountRef.current = messages.length;
-  }, [messages.length]);
-
-  // Trigger pagination callback when scrolled to the top
-  useEffect(() => {
-    if (!onReachTop || isFetchingPrevious) return;
-    const scrollEl = localContainerRef.current;
-    if (scrollEl && scrollEl.scrollTop === 0) {
-      onReachTop();
-    }
-  }, [messages, isFetchingPrevious, onReachTop]);
+        if (event.currentTarget.scrollTop <= 0) {
+          onReachTop();
+        }
+      },
+      [isFetchingPrevious, onReachTop],
+    );
 
   if (isLoading && messages.length === 0) {
     return (
@@ -77,7 +69,8 @@ export const MessageList: FC<IMessageListProps> = ({
 
   return (
     <section
-      ref={localContainerRef}
+      ref={scrollContainerRef}
+      onScroll={handleScroll}
       className="flex-1 min-h-0 overflow-y-auto px-4 pt-6 sm:px-6"
       role="log"
       aria-label="Conversation messages"
@@ -96,8 +89,8 @@ export const MessageList: FC<IMessageListProps> = ({
           className="flex flex-col gap-4 sm:gap-5 pb-4 sm:pb-6"
           aria-label="Message list"
         >
-          {messages.map((message, idx) => (
-            <li key={message.id ?? idx}>
+          {messages.map((message) => (
+            <li key={message.id}>
               <MessageBubble
                 message={message}
                 isSender={message.author.toLowerCase() === "you"}
@@ -111,4 +104,5 @@ export const MessageList: FC<IMessageListProps> = ({
       </div>
     </section>
   );
-};
+  },
+);
